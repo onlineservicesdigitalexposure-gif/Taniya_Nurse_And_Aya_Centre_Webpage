@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#123B32" />
+      <stop offset="100%" stop-color="#19845D" />
+    </linearGradient>
+  </defs>
+  <!-- Background Shield/Rounded Container -->
+  <rect width="64" height="64" rx="16" fill="url(#brandGrad)" />
+  <!-- Medical Care Cross with Rounded Corners -->
+  <path d="M26 14h12c1.1 0 2 .9 2 2v8h8c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2h-8v8c0 1.1-.9 2-2 2H26c-1.1 0-2-.9-2-2v-8h-8c-1.1 0-2-.9-2-2V26c0-1.1.9-2 2-2h8v-8c0-1.1.9-2 2-2z" fill="#FFFFFF" />
+  <!-- Central Accent Heart Symbol for Compassion -->
+  <path d="M32 37.5l-.7-.64C26.1 32.1 23 29.28 23 25.8c0-2.8 2.2-5 5-5 1.58 0 3.1.74 4 1.89.9-1.15 2.42-1.89 4-1.89 2.8 0 5 2.2 5 5 0 3.48-3.1 6.3-8.3 11.06l-.7.64z" fill="#E9B86E" />
+</svg>

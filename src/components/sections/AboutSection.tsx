@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import { MapPin, Heart, Home, Users, ArrowRight } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { MapPin, Heart, Home, Users, ArrowRight, Maximize2, X, ShieldCheck } from 'lucide-react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import frontImage from '../../assets/Front Image.png'
+import frontImage from '../../assets/Front Image.jpeg'
 import visitingCardImage from '../../assets/Visiting Card.png'
 import { BUSINESS_INFO } from '../../data/navigation'
 
@@ -19,13 +19,13 @@ interface AboutMediaItem {
 const ABOUT_MEDIA: AboutMediaItem[] = [
   {
     id: 'front-office',
-    label: 'Centre Storefront',
-    title: 'Physical Centre Storefront & Office',
+    label: 'Front Storefront View',
+    title: 'Physical Centre Storefront & Entrance',
     subtitle: '2009 Chak Garia, near Baghajatin Railway Station, Kolkata 700075',
     badge: 'Chak Garia • Kolkata',
     image: frontImage,
-    alt: 'Real storefront and office entrance of Taniya Nurse & Aya Centre at Chak Garia, near Baghajatin Railway Station, Kolkata',
-    fit: 'cover',
+    alt: 'Real storefront, registered signboard and office entrance of Taniya Nurse & Aya Centre at Chak Garia, near Baghajatin Railway Station, Kolkata',
+    fit: 'contain',
   },
   {
     id: 'visiting-card',
@@ -42,15 +42,39 @@ const ABOUT_MEDIA: AboutMediaItem[] = [
 export function AboutSection() {
   const shouldReduceMotion = useReducedMotion()
   const [activeMediaIndex, setActiveMediaIndex] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
-  // Auto-rotate between Storefront & Visiting Card every 4 seconds
+  // Auto-rotate between Storefront & Visiting Card every 6 seconds, pausing on hover or interaction
   useEffect(() => {
+    if (isPaused || isLightboxOpen) return
+
     const timer = setTimeout(() => {
       setActiveMediaIndex((prev) => (prev + 1) % ABOUT_MEDIA.length)
-    }, 3000) // 3 seconds
+    }, 6000)
 
     return () => clearTimeout(timer)
-  }, [activeMediaIndex])
+  }, [activeMediaIndex, isPaused, isLightboxOpen])
+
+  // Handle ESC key to close modal
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setIsLightboxOpen(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isLightboxOpen) {
+      window.addEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [isLightboxOpen, handleKeyDown])
 
   const activeMedia = ABOUT_MEDIA[activeMediaIndex]
 
@@ -133,6 +157,8 @@ export function AboutSection() {
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: shouldReduceMotion ? 0.01 : 0.5, ease: 'easeOut' }}
             className="lg:col-span-5 space-y-3.5"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
             {/* Interactive Tab Switcher */}
             <div className="grid grid-cols-2 gap-2 p-1.5 bg-white rounded-xl border border-brand-border shadow-soft-sm">
@@ -142,7 +168,10 @@ export function AboutSection() {
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setActiveMediaIndex(idx)}
+                    onClick={() => {
+                      setActiveMediaIndex(idx)
+                      setIsPaused(true)
+                    }}
                     className={`py-2 px-3 rounded-lg text-xs font-heading font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
                       isSelected
                         ? 'bg-brand-primary text-white shadow-soft-sm'
@@ -161,9 +190,23 @@ export function AboutSection() {
               })}
             </div>
 
-            {/* Main Visual Frame */}
+            {/* Main Visual Frame - Fixed Full View for Front Image & Visiting Card */}
             <div className="relative rounded-2xl overflow-hidden bg-white border border-brand-border shadow-soft-lg group">
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-b from-brand-bg to-white flex items-center justify-center">
+              <div
+                onClick={() => setIsLightboxOpen(true)}
+                className="relative h-[360px] sm:h-[420px] md:h-[460px] w-full overflow-hidden bg-brand-bg flex items-center justify-center cursor-pointer select-none"
+                title="Click to view full image in high resolution"
+              >
+                {/* Ambient Soft Blur Backdrop using active image */}
+                <img
+                  src={activeMedia.image}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-20 scale-110 pointer-events-none"
+                />
+                <div className="absolute inset-0 bg-white/40 pointer-events-none" />
+
+                {/* Main Image with Full View Display (No Cropping) */}
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeMedia.id}
@@ -180,24 +223,32 @@ export function AboutSection() {
                       duration: shouldReduceMotion ? 0.01 : 0.35,
                       ease: 'easeInOut',
                     }}
-                    className={`w-full h-full transition-transform duration-500 ease-out ${
-                      activeMedia.fit === 'contain'
-                        ? 'object-contain p-2.5 sm:p-3 group-hover:scale-[1.02]'
-                        : 'object-cover object-center group-hover:scale-[1.03]'
-                    }`}
+                    className="relative z-10 max-h-full max-w-full object-contain p-2.5 sm:p-3.5 drop-shadow-md transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                   />
                 </AnimatePresence>
 
+                {/* Hover Magnifier Tooltip */}
+                <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-brand-deep/20 backdrop-blur-[1px]">
+                  <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 text-brand-deep text-xs font-bold font-heading shadow-soft-md transform scale-95 group-hover:scale-100 transition-transform duration-200">
+                    <Maximize2 className="w-3.5 h-3.5 text-brand-primary" />
+                    <span>Click for Full View</span>
+                  </span>
+                </div>
+
                 {/* Slide indicator dots */}
                 <div
-                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-sm z-10"
+                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-sm z-30"
                   aria-label="Slide indicators"
                 >
                   {ABOUT_MEDIA.map((_, i) => (
                     <button
                       key={i}
                       type="button"
-                      onClick={() => setActiveMediaIndex(i)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setActiveMediaIndex(i)
+                        setIsPaused(true)
+                      }}
                       className={`h-1.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white ${
                         activeMediaIndex === i
                           ? 'w-5 bg-white'
@@ -252,6 +303,81 @@ export function AboutSection() {
 
         </div>
       </div>
+
+      {/* Full Resolution Modal / Lightbox for Storefront & Visiting Card */}
+      <AnimatePresence>
+        {isLightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-brand-deep/90 backdrop-blur-md"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Full view: ${activeMedia.title}`}
+            onClick={() => setIsLightboxOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-4xl max-h-[92vh] w-full bg-white rounded-2xl shadow-soft-xl overflow-hidden flex flex-col"
+            >
+              {/* Header */}
+              <div className="p-4 bg-brand-deep text-white flex items-center justify-between border-b border-brand-border">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-brand-accent" />
+                  <span className="font-heading font-bold text-sm sm:text-base">
+                    {activeMedia.title}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsLightboxOpen(false)}
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  aria-label="Close dialog"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Full Image */}
+              <div className="bg-black/95 flex-1 flex items-center justify-center p-2 sm:p-4 min-h-[350px] max-h-[72vh] overflow-hidden">
+                <img
+                  src={activeMedia.image}
+                  alt={activeMedia.alt}
+                  className="max-h-full max-w-full object-contain rounded-lg drop-shadow-lg"
+                />
+              </div>
+
+              {/* Footer */}
+              <div className="p-3 sm:p-4 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
+                <div className="text-xs text-brand-muted">
+                  <strong className="text-brand-deep">{activeMedia.subtitle}</strong>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <a
+                    href={`tel:${BUSINESS_INFO.rawPhone}`}
+                    className="btn-primary py-1.5 px-3 text-xs"
+                  >
+                    Call: {BUSINESS_INFO.phone}
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setIsLightboxOpen(false)}
+                    className="btn-secondary py-1.5 px-3 text-xs"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }

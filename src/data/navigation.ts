@@ -9,6 +9,7 @@ export const NAV_ITEMS: NavItem[] = [
   { name: 'Services', href: '#services', id: 'services' },
   { name: 'About', href: '#about', id: 'about' },
   { name: 'Why Us', href: '#why-us', id: 'why-us' },
+  { name: 'Nurse & Aya', href: '#nurse-aya', id: 'nurse-aya' },
   { name: 'FAQ', href: '#faq', id: 'faq' },
   { name: 'Contact', href: '#contact', id: 'contact' },
 ]

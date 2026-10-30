@@ -95,7 +95,7 @@ export function Navbar() {
                   e.preventDefault()
                   handleNavClick(item.href)
                 }}
-                className={`relative px-3 py-1.5 text-base font-bold font-heading tracking-tight rounded-md transition-colors ${
+                className={`relative px-2.5 xl:px-3 py-1.5 text-sm xl:text-base font-bold font-heading tracking-tight rounded-md transition-colors ${
                   isActive
                     ? 'text-brand-primary'
                     : 'text-brand-text hover:text-brand-primary hover:bg-brand-bg'

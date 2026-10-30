@@ -7,11 +7,12 @@ import { ServicesSection } from './components/sections/ServicesSection'
 import { AboutSection } from './components/sections/AboutSection'
 import { WhyChooseUsSection } from './components/sections/WhyChooseUsSection'
 import { HowItWorksSection } from './components/sections/HowItWorksSection'
+import { NurseAyaSection } from './components/sections/NurseAyaSection'
 import { FaqSection } from './components/sections/FaqSection'
 import { ContactSection } from './components/sections/ContactSection'
 
 export default function App() {
-  // Support direct loading of /#services, /#about, /#why-us, /#faq and /#contact on initial page load
+  // Support direct loading of /#services, /#about, /#why-us, /#nurse-aya, /#faq and /#contact on initial page load
   useEffect(() => {
     if (window.location.hash) {
       const hash = window.location.hash
@@ -54,10 +55,13 @@ export default function App() {
         {/* Section 4.5: How It Works */}
         <HowItWorksSection />
 
-        {/* Section 5: FAQ */}
+        {/* Section 5: Nurse & Aya */}
+        <NurseAyaSection />
+
+        {/* Section 6: FAQ */}
         <FaqSection />
 
-        {/* Section 6: Contact */}
+        {/* Section 7: Contact */}
         <ContactSection />
       </main>
 

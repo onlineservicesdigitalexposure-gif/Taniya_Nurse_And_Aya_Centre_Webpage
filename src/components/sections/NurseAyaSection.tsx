@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   ShieldCheck,
   Phone,
@@ -22,13 +22,17 @@ export function NurseAyaSection() {
   const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null)
 
   // Filter profiles based on selected category
-  const filteredProfiles = selectedCategory === 'all'
-    ? AYA_PROFILES
-    : AYA_PROFILES.filter((profile) => profile.category === selectedCategory)
+  const filteredProfiles = useMemo(
+    () =>
+      selectedCategory === 'all'
+        ? AYA_PROFILES
+        : AYA_PROFILES.filter((profile) => profile.category === selectedCategory),
+    [selectedCategory]
+  )
 
   // Lightbox navigation helpers
   const openLightbox = (profileId: string) => {
-    const index = AYA_PROFILES.findIndex((p) => p.id === profileId)
+    const index = filteredProfiles.findIndex((p) => p.id === profileId)
     if (index !== -1) {
       setActiveLightboxIndex(index)
     }
@@ -39,16 +43,16 @@ export function NurseAyaSection() {
   }
 
   const nextLightbox = useCallback(() => {
-    if (activeLightboxIndex !== null) {
-      setActiveLightboxIndex((prev) => ((prev! + 1) % AYA_PROFILES.length))
+    if (activeLightboxIndex !== null && filteredProfiles.length > 0) {
+      setActiveLightboxIndex((prev) => (prev! + 1) % filteredProfiles.length)
     }
-  }, [activeLightboxIndex])
+  }, [activeLightboxIndex, filteredProfiles.length])
 
   const prevLightbox = useCallback(() => {
-    if (activeLightboxIndex !== null) {
-      setActiveLightboxIndex((prev) => (prev! - 1 + AYA_PROFILES.length) % AYA_PROFILES.length)
+    if (activeLightboxIndex !== null && filteredProfiles.length > 0) {
+      setActiveLightboxIndex((prev) => (prev! - 1 + filteredProfiles.length) % filteredProfiles.length)
     }
-  }, [activeLightboxIndex])
+  }, [activeLightboxIndex, filteredProfiles.length])
 
   // Handle keyboard events (ESC, Left, Right)
   useEffect(() => {
@@ -70,7 +74,9 @@ export function NurseAyaSection() {
   }, [activeLightboxIndex, nextLightbox, prevLightbox])
 
   const activeProfile: AyaProfile | null =
-    activeLightboxIndex !== null ? AYA_PROFILES[activeLightboxIndex] : null
+    activeLightboxIndex !== null && filteredProfiles[activeLightboxIndex]
+      ? filteredProfiles[activeLightboxIndex]
+      : null
 
   return (
     <section
@@ -146,11 +152,19 @@ export function NurseAyaSection() {
         <div className="flex flex-wrap items-center justify-center gap-2 mb-6 sm:mb-8">
           {AYA_CATEGORIES.map((tab) => {
             const isSelected = selectedCategory === tab.id
+            const count =
+              tab.id === 'all'
+                ? AYA_PROFILES.length
+                : AYA_PROFILES.filter((profile) => profile.category === tab.id).length
+
             return (
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setSelectedCategory(tab.id as AyaCategory)}
+                onClick={() => {
+                  setSelectedCategory(tab.id as AyaCategory)
+                  setActiveLightboxIndex(null)
+                }}
                 className={`py-2 px-3.5 sm:px-4 rounded-full text-xs sm:text-sm font-bold font-heading transition-all duration-200 flex items-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
                   isSelected
                     ? 'bg-brand-primary text-white shadow-soft-md'
@@ -166,7 +180,7 @@ export function NurseAyaSection() {
                       : 'bg-brand-bg text-brand-muted'
                   }`}
                 >
-                  {tab.count}
+                  {count}
                 </span>
               </button>
             )
@@ -408,7 +422,7 @@ export function NurseAyaSection() {
 
                 {/* Photo Counter Pill */}
                 <div className="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-black/70 text-white text-xs font-mono">
-                  {activeLightboxIndex + 1} / {AYA_PROFILES.length}
+                  {activeLightboxIndex + 1} / {filteredProfiles.length}
                 </div>
               </div>
 

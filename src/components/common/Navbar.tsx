@@ -13,8 +13,13 @@ export function Navbar() {
   const activeSection = useScrollSpy(SECTION_IDS, 120)
 
   useEffect(() => {
+    let prevScrolled = false
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
+      const isScrolled = window.scrollY > 20
+      if (isScrolled !== prevScrolled) {
+        prevScrolled = isScrolled
+        setScrolled(isScrolled)
+      }
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)

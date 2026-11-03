@@ -59,6 +59,7 @@ interface HeroImageCardProps {
   currentSlide: number
   setCurrentSlide: (index: number) => void
   shouldReduceMotion: boolean | null
+  setIsPaused?: (paused: boolean) => void
 }
 
 function HeroImageCard({
@@ -66,11 +67,16 @@ function HeroImageCard({
   currentSlide,
   setCurrentSlide,
   shouldReduceMotion,
+  setIsPaused,
 }: HeroImageCardProps) {
   const activeSlide = slides[currentSlide]
 
   return (
-    <div className="relative mx-auto max-w-md lg:max-w-none">
+    <div
+      className="relative mx-auto max-w-md lg:max-w-none"
+      onMouseEnter={() => setIsPaused?.(true)}
+      onMouseLeave={() => setIsPaused?.(false)}
+    >
       {/* Subtle decorative background frame */}
       <div
         className="absolute -inset-2 rounded-3xl bg-gradient-to-tr from-brand-primary/10 via-brand-accent/20 to-transparent -rotate-1 pointer-events-none"
@@ -148,15 +154,20 @@ function HeroImageCard({
 export function HeroSection() {
   const shouldReduceMotion = useReducedMotion()
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
 
-  // Switch image every 3 seconds (3000ms) using setTimeout
+  // Switch image every 3.5s, pausing on hover, tab visibility change, or if motion is reduced
   useEffect(() => {
+    if (shouldReduceMotion || isPaused) return
+
     const timer = setTimeout(() => {
-      setCurrentSlide((prevIndex) => (prevIndex + 1) % HERO_SLIDES.length)
-    }, 3000)
+      if (!document.hidden) {
+        setCurrentSlide((prevIndex) => (prevIndex + 1) % HERO_SLIDES.length)
+      }
+    }, 3500)
 
     return () => clearTimeout(timer)
-  }, [currentSlide])
+  }, [currentSlide, isPaused, shouldReduceMotion])
 
   const whatsappUrl = `https://wa.me/${BUSINESS_INFO.whatsappNumber}?text=${BUSINESS_INFO.whatsappDefaultMessage}`
 
@@ -233,6 +244,7 @@ export function HeroSection() {
                 currentSlide={currentSlide}
                 setCurrentSlide={setCurrentSlide}
                 shouldReduceMotion={shouldReduceMotion}
+                setIsPaused={setIsPaused}
               />
             </motion.div>
 
@@ -324,6 +336,7 @@ export function HeroSection() {
                 currentSlide={currentSlide}
                 setCurrentSlide={setCurrentSlide}
                 shouldReduceMotion={shouldReduceMotion}
+                setIsPaused={setIsPaused}
               />
             </motion.div>
           </div>

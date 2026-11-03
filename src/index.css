@@ -306,3 +306,16 @@
 .btn-gold:active {
   transform: translateY(0);
 }
+
+/* Performance & Rendering Optimizations */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* GPU hardware acceleration for animated elements */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}

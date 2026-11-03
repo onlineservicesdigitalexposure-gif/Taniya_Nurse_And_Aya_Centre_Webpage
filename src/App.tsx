@@ -1,15 +1,46 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { Navbar } from './components/common/Navbar'
-import { Footer } from './components/common/Footer'
-import { FloatingActions } from './components/common/FloatingActions'
 import { HeroSection } from './components/sections/HeroSection'
 import { ServicesSection } from './components/sections/ServicesSection'
-import { AboutSection } from './components/sections/AboutSection'
-import { WhyChooseUsSection } from './components/sections/WhyChooseUsSection'
-import { HowItWorksSection } from './components/sections/HowItWorksSection'
-import { NurseAyaSection } from './components/sections/NurseAyaSection'
-import { FaqSection } from './components/sections/FaqSection'
-import { ContactSection } from './components/sections/ContactSection'
+
+// Lazy-loaded below-the-fold components to reduce initial bundle & maximize Lighthouse score
+const AboutSection = lazy(() =>
+  import('./components/sections/AboutSection').then((m) => ({ default: m.AboutSection }))
+)
+const WhyChooseUsSection = lazy(() =>
+  import('./components/sections/WhyChooseUsSection').then((m) => ({ default: m.WhyChooseUsSection }))
+)
+const HowItWorksSection = lazy(() =>
+  import('./components/sections/HowItWorksSection').then((m) => ({ default: m.HowItWorksSection }))
+)
+const NurseAyaSection = lazy(() =>
+  import('./components/sections/NurseAyaSection').then((m) => ({ default: m.NurseAyaSection }))
+)
+const FaqSection = lazy(() =>
+  import('./components/sections/FaqSection').then((m) => ({ default: m.FaqSection }))
+)
+const ContactSection = lazy(() =>
+  import('./components/sections/ContactSection').then((m) => ({ default: m.ContactSection }))
+)
+const Footer = lazy(() =>
+  import('./components/common/Footer').then((m) => ({ default: m.Footer }))
+)
+const FloatingActions = lazy(() =>
+  import('./components/common/FloatingActions').then((m) => ({ default: m.FloatingActions }))
+)
+
+function SectionSkeleton({ id, minHeight = 'min-h-[400px]' }: { id?: string; minHeight?: string }) {
+  return (
+    <div
+      id={id}
+      aria-busy="true"
+      aria-label="Loading section..."
+      className={`w-full ${minHeight} flex items-center justify-center bg-brand-bg/50 py-16`}
+    >
+      <div className="w-7 h-7 rounded-full border-2 border-brand-primary/20 border-t-brand-primary animate-spin" />
+    </div>
+  )
+}
 
 export default function App() {
   // Support direct loading of /#services, /#about, /#why-us, /#nurse-aya, /#faq and /#contact on initial page load
@@ -21,7 +52,7 @@ export default function App() {
         if (targetElement) {
           targetElement.scrollIntoView({ behavior: 'smooth' })
         }
-      }, 100)
+      }, 250)
       return () => clearTimeout(timer)
     }
   }, [])
@@ -46,30 +77,46 @@ export default function App() {
         {/* Section 2: Services */}
         <ServicesSection />
 
-        {/* Section 3: About */}
-        <AboutSection />
+        {/* Section 3: About (Lazy Loaded) */}
+        <Suspense fallback={<SectionSkeleton id="about" minHeight="min-h-[500px]" />}>
+          <AboutSection />
+        </Suspense>
 
-        {/* Section 4: Why Us */}
-        <WhyChooseUsSection />
+        {/* Section 4: Why Us (Lazy Loaded) */}
+        <Suspense fallback={<SectionSkeleton id="why-us" minHeight="min-h-[450px]" />}>
+          <WhyChooseUsSection />
+        </Suspense>
 
-        {/* Section 4.5: How It Works */}
-        <HowItWorksSection />
+        {/* Section 4.5: How It Works (Lazy Loaded) */}
+        <Suspense fallback={<SectionSkeleton id="how-it-works" minHeight="min-h-[400px]" />}>
+          <HowItWorksSection />
+        </Suspense>
 
-        {/* Section 5: Nurse & Aya */}
-        <NurseAyaSection />
+        {/* Section 5: Nurse & Aya (Lazy Loaded) */}
+        <Suspense fallback={<SectionSkeleton id="nurse-aya" minHeight="min-h-[600px]" />}>
+          <NurseAyaSection />
+        </Suspense>
 
-        {/* Section 6: FAQ */}
-        <FaqSection />
+        {/* Section 6: FAQ (Lazy Loaded) */}
+        <Suspense fallback={<SectionSkeleton id="faq" minHeight="min-h-[450px]" />}>
+          <FaqSection />
+        </Suspense>
 
-        {/* Section 7: Contact */}
-        <ContactSection />
+        {/* Section 7: Contact (Lazy Loaded) */}
+        <Suspense fallback={<SectionSkeleton id="contact" minHeight="min-h-[600px]" />}>
+          <ContactSection />
+        </Suspense>
       </main>
 
-      {/* Shared Global Footer */}
-      <Footer />
+      {/* Shared Global Footer (Lazy Loaded) */}
+      <Suspense fallback={<footer className="h-48 bg-brand-deep" />}>
+        <Footer />
+      </Suspense>
 
       {/* Floating Action Buttons (Phone & WhatsApp) */}
-      <FloatingActions />
+      <Suspense fallback={null}>
+        <FloatingActions />
+      </Suspense>
     </div>
   )
 }

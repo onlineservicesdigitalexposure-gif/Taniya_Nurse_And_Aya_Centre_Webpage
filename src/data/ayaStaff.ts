@@ -7,6 +7,7 @@ import aya6 from '../assets/Aya/Aya6.jpeg'
 import aya7 from '../assets/Aya/Aya7.jpeg'
 import aya8 from '../assets/Aya/Aya8.jpeg'
 import aya9 from '../assets/Aya/Aya9.jpeg'
+import aya10 from '../assets/Aya/Aya10.jpeg'
 
 export type AyaCategory = 'all' | 'patient-care' | 'baby-care' | 'team'
 
@@ -172,11 +173,34 @@ export const AYA_PROFILES: AyaProfile[] = [
     verification: 'Govt. Regd. Centre • 100% Verified',
     whatsappEnquiryMessage: 'Hello Taniya Nurse & Aya Centre, I would like to consult with your care team regarding immediate caregiver deployment.',
   },
+  {
+    id: 'aya-10',
+    name: 'Female Attendant & Aya Team',
+    role: 'Dedicated Female Aya & Attendant Team',
+    category: 'team',
+    categoryLabel: 'Female Caregiver Staff',
+    image: aya10,
+    alt: 'Four dedicated and verified female ayas and nursing attendants seated together at Taniya Nurse and Aya Centre in Kolkata, ready for patient, elderly, and baby care shifts',
+    shift: '12h Day / Night & 24h Residential',
+    experience: 'Experienced Female Caregiver Group',
+    specialties: [
+      'Elderly & Bedridden Care',
+      'Mother & Newborn Support',
+      'Daily Sponge Bath & Hygiene',
+      '24/7 Residential Care',
+    ],
+    description:
+      'Our experienced team of verified female ayas and nursing attendants at Taniya Nurse & Aya Centre, providing reliable bedside patient care, post-surgical recovery, infant nurturing, and respectful companionship across Kolkata homes.',
+    objectPosition: 'center 25%',
+    verification: '100% ID & Police Verified',
+    whatsappEnquiryMessage:
+      'Hello Taniya Nurse & Aya Centre, I would like to inquire about the Female Caregiver & Aya Team (Profile #10) for home care assistance.',
+  },
 ]
 
 export const AYA_CATEGORIES = [
-  { id: 'all', label: 'All Attendants & Nurses', count: 9 },
+  { id: 'all', label: 'All Attendants & Nurses', count: 10 },
   { id: 'patient-care', label: 'Patient & Senior Care', count: 6 },
   { id: 'baby-care', label: 'Baby & Mother Care', count: 2 },
-  { id: 'team', label: 'Care Team & Male Attendants', count: 1 },
+  { id: 'team', label: 'Care Team & Attendants', count: 2 },
 ] as const
